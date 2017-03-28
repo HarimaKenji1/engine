@@ -108,7 +108,7 @@ var engine;
 (function (engine) {
     var RES;
     (function (RES) {
-        var RESOURCE_PATH = "././Resources/";
+        var RESOURCE_PATH = "./Resources/";
         function getRes(path) {
             return new Promise(function (resolve, reject) {
                 var result = new Image();
