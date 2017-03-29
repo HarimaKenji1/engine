@@ -19,7 +19,7 @@ declare namespace engine {
     function invertMatrix(m: Matrix): Matrix;
     function matrixAppendMatrix(m1: Matrix, m2: Matrix): Matrix;
     class Matrix {
-        constructor();
+        constructor(a?: number, b?: number, c?: number, d?: number, tx?: number, ty?: number);
         a: number;
         b: number;
         c: number;

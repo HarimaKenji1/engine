@@ -48,7 +48,7 @@ var engine;
         var tx = m.tx;
         var ty = m.ty;
         var determinant = a * d - b * c;
-        var result = new Matrix();
+        var result = new Matrix(1, 0, 0, 1, 0, 0);
         if (determinant == 0) {
             throw new Error("no invert");
         }
@@ -79,14 +79,40 @@ var engine;
     var TwoPI = PI * 2;
     var DEG_TO_RAD = Math.PI / 180;
     class Matrix {
-        constructor() {
-            //a: number = 1, b: number = 0, c: number = 0, d: number = 1, tx: number = 0, ty: number = 0
-            this.a = 1;
-            this.b = 0;
-            this.c = 0;
-            this.d = 1;
-            this.tx = 0;
-            this.ty = 0;
+        // constructor() {
+        //     //a: number = 1, b: number = 0, c: number = 0, d: number = 1, tx: number = 0, ty: number = 0
+        //     this.a = 1;
+        //     this.b = 0;
+        //     this.c = 0;
+        //     this.d = 1;
+        //     this.tx = 0;
+        //     this.ty = 0;
+        // }
+        constructor(a, b, c, d, tx, ty) {
+            if (a != null)
+                this.a = a;
+            else
+                this.a = 1;
+            if (b != null)
+                this.b = b;
+            else
+                this.b = 0;
+            if (c != null)
+                this.c = c;
+            else
+                this.c = 0;
+            if (d != null)
+                this.d = d;
+            else
+                this.d = 1;
+            if (tx != null)
+                this.tx = tx;
+            else
+                this.tx = 0;
+            if (ty != null)
+                this.ty = ty;
+            else
+                this.ty = 0;
         }
         toString() {
             return "(a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
