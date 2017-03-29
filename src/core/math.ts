@@ -52,7 +52,7 @@ namespace engine {
         var ty = m.ty;
 
         var determinant = a * d - b * c;
-        var result = new Matrix(1, 0, 0, 1, 0, 0);
+        var result = new Matrix();
         if (determinant == 0) {
             throw new Error("no invert");
         }
@@ -89,13 +89,14 @@ namespace engine {
 
     export class Matrix {
 
-        constructor(a: number = 1, b: number = 0, c: number = 0, d: number = 1, tx: number = 0, ty: number = 0) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.d = d;
-            this.tx = tx;
-            this.ty = ty;
+        constructor() {
+            //a: number = 1, b: number = 0, c: number = 0, d: number = 1, tx: number = 0, ty: number = 0
+            this.a = 1;
+            this.b = 0;
+            this.c = 0;
+            this.d = 1;
+            this.tx = 0;
+            this.ty = 0;
         }
 
         public a: number;

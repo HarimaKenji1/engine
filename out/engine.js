@@ -1,3 +1,4 @@
+"use strict";
 var engine;
 (function (engine) {
     class Point {
@@ -47,7 +48,7 @@ var engine;
         var tx = m.tx;
         var ty = m.ty;
         var determinant = a * d - b * c;
-        var result = new Matrix(1, 0, 0, 1, 0, 0);
+        var result = new Matrix();
         if (determinant == 0) {
             throw new Error("no invert");
         }
@@ -78,13 +79,14 @@ var engine;
     var TwoPI = PI * 2;
     var DEG_TO_RAD = Math.PI / 180;
     class Matrix {
-        constructor(a = 1, b = 0, c = 0, d = 1, tx = 0, ty = 0) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.d = d;
-            this.tx = tx;
-            this.ty = ty;
+        constructor() {
+            //a: number = 1, b: number = 0, c: number = 0, d: number = 1, tx: number = 0, ty: number = 0
+            this.a = 1;
+            this.b = 0;
+            this.c = 0;
+            this.d = 1;
+            this.tx = 0;
+            this.ty = 0;
         }
         toString() {
             return "(a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
@@ -104,6 +106,7 @@ var engine;
     }
     engine.Matrix = Matrix;
 })(engine || (engine = {}));
+"use strict";
 var engine;
 (function (engine) {
     var RES;
@@ -126,6 +129,7 @@ var engine;
         RES.getRes = getRes;
     })(RES = engine.RES || (engine.RES = {}));
 })(engine || (engine = {}));
+"use strict";
 var engine;
 (function (engine) {
     function setTimeout(func, delayTime) {
@@ -189,6 +193,7 @@ var engine;
     }
     engine.Ticker = Ticker;
 })(engine || (engine = {}));
+"use strict";
 var engine;
 (function (engine) {
     var TouchEventsType;
@@ -258,6 +263,7 @@ var engine;
     }
     engine.TouchEvents = TouchEvents;
 })(engine || (engine = {}));
+"use strict";
 var engine;
 (function (engine) {
     class DisplayObject {
@@ -509,14 +515,14 @@ var engine;
     engine.Bitmap = Bitmap;
     class Shape extends DisplayObjectContainer {
         constructor() {
-            super(...arguments);
+            super();
             this.graphics = new Graphics();
         }
     }
     engine.Shape = Shape;
     class Graphics extends DisplayObjectContainer {
         constructor() {
-            super(...arguments);
+            super();
             this.fillColor = "#000000";
             this.alpha = 1;
             this.globalAlpha = 1;
@@ -593,6 +599,7 @@ var engine;
     }
     engine.Texture = Texture;
 })(engine || (engine = {}));
+"use strict";
 var engine;
 (function (engine) {
     engine.run = (canvas) => {

@@ -324,6 +324,9 @@ export class Bitmap extends DisplayObject{
 export class Shape extends DisplayObjectContainer{
 
     graphics : Graphics = new Graphics();
+    constructor(){
+        super();
+    }
 
 }
 
@@ -335,6 +338,10 @@ export class Graphics extends DisplayObjectContainer{
     strokeColor = "#000000";
     lineWidth = 1;
     lineColor = "#000000";
+
+    constructor(){
+        super();
+    }
     
 
     beginFill(color,alpha){

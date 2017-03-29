@@ -1,8 +1,9 @@
 {
 	"compilerOptions": {
 		"target": "es6",
-		"out": "./engine/out/engine.js",
+		"out": "./out/engine.js",
 		"declaration": true,
+		"alwaysStrict": true,
 		"experimentalDecorators":true
 	},
 	"files": [

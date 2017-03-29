@@ -19,7 +19,7 @@ declare namespace engine {
     function invertMatrix(m: Matrix): Matrix;
     function matrixAppendMatrix(m1: Matrix, m2: Matrix): Matrix;
     class Matrix {
-        constructor(a?: number, b?: number, c?: number, d?: number, tx?: number, ty?: number);
+        constructor();
         a: number;
         b: number;
         c: number;
@@ -157,6 +157,7 @@ declare namespace engine {
     }
     class Shape extends DisplayObjectContainer {
         graphics: Graphics;
+        constructor();
     }
     class Graphics extends DisplayObjectContainer {
         fillColor: string;
@@ -165,6 +166,7 @@ declare namespace engine {
         strokeColor: string;
         lineWidth: number;
         lineColor: string;
+        constructor();
         beginFill(color: any, alpha: any): void;
         endFill(): void;
         drawRect(x1: any, y1: any, x2: any, y2: any, context2D: CanvasRenderingContext2D): void;
