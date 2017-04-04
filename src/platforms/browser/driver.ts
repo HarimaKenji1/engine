@@ -2,8 +2,8 @@ namespace engine {
     export let run = (canvas: HTMLCanvasElement) => {
 
         var stage = engine.Stage.getInstance();
-        stage.setWidth(canvas.width);
-        stage.setHeight(canvas.height);
+        stage.width = canvas.width;
+        stage.height = canvas.height;
         let context2D = canvas.getContext("2d");
         let renderer = new CanvasRenderer(stage,context2D);
         var currentTarget;                      //鼠标点击时当前的对象
@@ -11,12 +11,15 @@ namespace engine {
         var isMouseDown = false;
         var startPoint = new Point(-1,-1);
         var movingPoint = new Point(0,0);
+        var resoucesJson = RES.getRES("RES.json", () => {});
+        RES.loadConfig(resoucesJson);
+
         let lastNow = Date.now();
         let frameHandler = () => {
             let now = Date.now();
             let deltaTime = now - lastNow;
             Ticker.getInstance().notify(deltaTime);
-            context2D.clearRect(0, 0, stage.getWidth(), stage.getHeight());
+            context2D.clearRect(0, 0, stage.width, stage.height);
             context2D.save();
             stage.update();
             renderer.render();
@@ -129,6 +132,7 @@ namespace engine {
             this.context2D.fillText(textField.text,0,0 + textField.size);
         }
     }
+
 
 
 

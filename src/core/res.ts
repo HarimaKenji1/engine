@@ -11,19 +11,25 @@ namespace engine {
         export class ImageProcessor implements Processor {
 
         load(url: string, callback: Function) {
+                var result = document.createElement("img");
+                result.src = RESOURCE_PATH + url;
+                result.onload = () => {
+                    callback(result);
+                    return result;
+                }
             // let image = document.createElement("img");
             // image.src = url;
             // image.onload = () => {
             //     callback();
             // }
-            return new Promise(function (resolve, reject) {
-                var result = document.createElement("img");
-                result.src = RESOURCE_PATH + url;
-                result.onload = () => {
-                    resolve(result);
-                    callback(result);
-                }
-            });
+            // return new Promise(function (resolve, reject) {
+            //     var result = document.createElement("img");
+            //     result.src = RESOURCE_PATH + url;
+            //     result.onload = () => {
+            //         resolve(result);
+            //         callback(result);
+            //     }
+            // });
             
         }
     }
@@ -34,7 +40,22 @@ namespace engine {
             xhr.open("get", RESOURCE_PATH + url);
             xhr.send();
             xhr.onload = () => {
-                callback(xhr.responseText);
+            xhr.open('GET', url, true);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                // 通信成功时，状态值为4
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var obj = eval('(' + xhr.responseText + ')'); 
+                        return xhr.responseText;
+                    } else {
+                        console.error(xhr.statusText);
+                    }
+                }
+            };
+            xhr.onerror = function (e) {
+                console.error(xhr.statusText);
+            };
             }
         }
     }
@@ -46,22 +67,35 @@ namespace engine {
     var cache = {};
 
     export function getRES(url: string, callback: (data: any) => void) {
-        if(cache[url] == null){
+        if(cache[url] == null || 
+        (getTypeByURL(url) == "image" && cache[url].src == null)){
             let type = getTypeByURL(url);
             let processor = createProcessor(type);
             if (processor != null) {
                 processor.load(url, (data) => {
                     cache[url] = data;
                     callback(data);
-                    return data;
+                    return cache[url];
                 });
             }
         }
-        else
         return cache[url];
     }
 
-    function get(url: string): any {
+    export function loadConfig(preloadJson,callback? : () => void){
+        preloadJson.resources.foreach((config) => {
+                if(config.type == "image"){
+                    var preloadResource = new Image();
+                    preloadResource.width = config.width;
+                    preloadResource.height = config.height;
+                }
+
+                cache[config.url] = preloadResource;
+            });
+        callback();
+    }
+
+    export function get(url: string): any {
         return cache[url];
     }
 

@@ -31,8 +31,8 @@ export abstract class DisplayObject implements Drawable{
     localMatrix = new Matrix();
     globalMatrix = new Matrix();
     listeners : TouchEvents[] = [];
-    protected width = 1;
-    protected height = 1;
+    public width = 1;
+    public height = 1;
     touchEnabled = true;
     public normalWidth = -1;
     public normalHeight = -1;
@@ -41,26 +41,26 @@ export abstract class DisplayObject implements Drawable{
         this.type = type;
     }
 
-    setWidth(width : number){
-        this.width = width;
-    }
-    setHeight(height : number){
-        this.height = height;
-    }
-    setScaleX(scalex){
+    // set Width(width : number){
+    //     this.width = width;
+    // }
+    // set Height(height : number){
+    //     this.height = height;
+    // }
+    set ScaleX(scalex){
         this.scaleX = scalex;
         this.width = this.width * this.scaleX;
     }
-    setScaleY(scaley){
+    set ScaleY(scaley){
         this.scaleY = scaley;
         this.height = this.height * this.scaleY;
     }
-    getWidth(){
-        return this.width;
-    }
-    getHeight(){
-        return this.height;
-    }
+    // get Width(){
+    //     return this.width;
+    // }
+    // get Height(){
+    //     return this.height;
+    // }
 
     update(){
 
@@ -135,8 +135,8 @@ export abstract class DisplayObject implements Drawable{
     if(this.touchEnabled){
         var rect = new Rectangle();
         rect.x = rect.y = 0;
-        rect.width = this.getWidth();
-        rect.height = this.getHeight();
+        rect.width = this.width;
+        rect.height = this.height;
         var result = null;
         if(rect.isPointInRectangle(x,y)){
             result = this;
@@ -241,30 +241,50 @@ export class TextField extends DisplayObject{
 export class Bitmap extends DisplayObject{
 
     imageID = "";
-    texture ;
+    _texture;
 
 
     constructor(imageID? : string){
         super("Bitmap");
-        this.imageID = imageID;
+        if(imageID){
+            this.imageID = imageID;
+            this.texture = RES.getRES(imageID,(data) => {
+                this.width = data.width;
+                this.height = data.height;
+                this.normalWidth = data.width;
+                this.normalHeight = data.height;
+            });
+    }
         // this.texture = new Image();
         // this.texture.src = this.imageID;
         // this.texture.onload = () =>{
         //     this.width = this.texture.width;
         //     this.height = this.texture.height;
         // }
-        RES.getRes(imageID).then((value)=>{
-            this.texture = value;
-            this.setWidth(this.texture.width);
-            this.setHeight(this.texture.height);
-            this.normalWidth = this.texture.width;
-            this.normalHeight = this.texture.height;
-            // this.width = this.texture.width;
-            // this.height = this.texture.height;
-            // this.image = this.texture.data;
-            console.log("load complete "+value);
+        // RES.getRes(imageID).then((value)=>{
+        //     this.texture = value;
+        //     this.setWidth(this.texture.width);
+        //     this.setHeight(this.texture.height);
+        //     this.normalWidth = this.texture.width;
+        //     this.normalHeight = this.texture.height;
+        //     // this.width = this.texture.width;
+        //     // this.height = this.texture.height;
+        //     // this.image = this.texture.data;
+        //     console.log("load complete "+value);
             // console.log(this.width + " hi! " + this.height);
-        })
+        // })
+    }
+
+    set texture(data){
+        this._texture = data;
+        this.width = this._texture.width;
+        this.height = this._texture.height;
+        this.normalWidth = this._texture.width;
+        this.normalHeight = this._texture.height;
+    }
+
+    get texture(){
+        return this._texture;
     }
 
 
