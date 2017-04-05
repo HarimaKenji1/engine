@@ -138,21 +138,131 @@ var engine;
     var RES;
     (function (RES) {
         var RESOURCE_PATH = "./Resources/";
-        function getRes(path) {
-            return new Promise(function (resolve, reject) {
-                var result = new Image();
-                result.src = RESOURCE_PATH + path;
-                result.onload = () => {
-                    resolve(result);
+        class ImageProcessor {
+            load(url, callback) {
+                var data = document.createElement("img");
+                data.src = RESOURCE_PATH + url;
+                data.onload = () => {
+                    callback(data);
                 };
-            });
-            // var result = new Image();
-            // result.src = path;
-            // result.onload = () => {
-            //         return(result);
-            // }
+                // let image = document.createElement("img");
+                // image.src = url;
+                // image.onload = () => {
+                //     callback();
+                // }
+                // return new Promise(function (resolve, reject) {
+                //     var result = document.createElement("img");
+                //     result.src = RESOURCE_PATH + url;
+                //     result.onload = () => {
+                //         resolve(result);
+                //         callback(result);
+                //     }
+                // });
+            }
         }
-        RES.getRes = getRes;
+        RES.ImageProcessor = ImageProcessor;
+        class TextProcessor {
+            load(url, callback) {
+                var xhr = new XMLHttpRequest();
+                // xhr.open("get", RESOURCE_PATH + url);
+                // xhr.send();
+                // xhr.onload = () => {
+                xhr.open('GET', RESOURCE_PATH + url, true);
+                xhr.send();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            var obj = eval('(' + xhr.responseText + ')');
+                            callback(obj);
+                            // return obj;
+                        }
+                        else {
+                            console.error(xhr.statusText);
+                        }
+                    }
+                    // };
+                    xhr.onerror = function (e) {
+                        console.error(xhr.statusText);
+                    };
+                };
+            }
+        }
+        RES.TextProcessor = TextProcessor;
+        function mapTypeSelector(typeSelector) {
+            getTypeByURL = typeSelector;
+        }
+        RES.mapTypeSelector = mapTypeSelector;
+        var cache = {};
+        function getRES(url, callback) {
+            // if(cache[url] == null || 
+            // ( getTypeByURL(url) == "image" && 
+            //   cache[url].data == null) ){
+            let type = getTypeByURL(url);
+            let processor = createProcessor(type);
+            if (processor != null) {
+                processor.load(url, (data) => {
+                    cache[url] = data;
+                    callback(data);
+                });
+            }
+            //}
+            // else
+            // callback();
+        }
+        RES.getRES = getRES;
+        function loadConfig(preloadJson, callback) {
+            preloadJson.resources.forEach((config) => {
+                if (config.type == "image") {
+                    var preloadResource = new engine.Texture();
+                    getRES(config.url, (data) => { preloadResource.data = data; console.log(data); });
+                    preloadResource.width = config.width;
+                    preloadResource.height = config.height;
+                }
+                cache[config.url] = preloadResource;
+            });
+            callback();
+        }
+        RES.loadConfig = loadConfig;
+        function get(url) {
+            return cache[url];
+        }
+        var getTypeByURL = (url) => {
+            if (url.indexOf(".jpg") >= 0 || url.indexOf(".png") >= 0) {
+                return "image";
+            }
+            else if (url.indexOf(".mp3") >= 0) {
+                return "sound";
+            }
+            else if (url.indexOf(".json") >= 0) {
+                return "text";
+            }
+        };
+        let hashMap = {
+            "image": new ImageProcessor(),
+            "text": new TextProcessor()
+        };
+        function createProcessor(type) {
+            let processor = hashMap[type];
+            return processor;
+        }
+        function map(type, processor) {
+            hashMap[type] = processor;
+        }
+        RES.map = map;
+        // export function getRes(path: string) {
+        //     return new Promise(function (resolve, reject) {
+        //         var result = new Image();
+        //         result.src = RESOURCE_PATH + path;
+        //         result.onload = () => {
+        //             resolve(result);
+        //         }
+        //     });
+        //     // var result = new Image();
+        //     // result.src = path;
+        //     // result.onload = () => {
+        //     //         return(result);
+        //     // }
+        // }
     })(RES = engine.RES || (engine.RES = {}));
 })(engine || (engine = {}));
 "use strict";
@@ -274,7 +384,7 @@ var engine;
     TouchEventService.stageX = -1;
     TouchEventService.stageY = -1;
     engine.TouchEventService = TouchEventService;
-    class TouchEvents {
+    class TouchEventData {
         constructor(type, func, obj, capture, priority) {
             this.capture = false;
             this.priority = 0;
@@ -287,7 +397,7 @@ var engine;
             this.priority = priority || 0;
         }
     }
-    engine.TouchEvents = TouchEvents;
+    engine.TouchEventData = TouchEventData;
 })(engine || (engine = {}));
 "use strict";
 var engine;
@@ -312,26 +422,26 @@ var engine;
             this.normalHeight = -1;
             this.type = type;
         }
-        setWidth(width) {
-            this.width = width;
-        }
-        setHeight(height) {
-            this.height = height;
-        }
-        setScaleX(scalex) {
+        // set Width(width : number){
+        //     this.width = width;
+        // }
+        // set Height(height : number){
+        //     this.height = height;
+        // }
+        set ScaleX(scalex) {
             this.scaleX = scalex;
             this.width = this.width * this.scaleX;
         }
-        setScaleY(scaley) {
+        set ScaleY(scaley) {
             this.scaleY = scaley;
             this.height = this.height * this.scaleY;
         }
-        getWidth() {
-            return this.width;
-        }
-        getHeight() {
-            return this.height;
-        }
+        // get Width(){
+        //     return this.width;
+        // }
+        // get Height(){
+        //     return this.height;
+        // }
         update() {
             if (this.normalWidth > 0) {
                 this.scaleX = this.width / this.normalWidth;
@@ -353,7 +463,7 @@ var engine;
             // this.render(context2D);
         }
         addEventListener(type, touchFunction, object, ifCapture, priority) {
-            var touchEvent = new engine.TouchEvents(type, touchFunction, object, ifCapture, priority);
+            var touchEvent = new engine.TouchEventData(type, touchFunction, object, ifCapture, priority);
             this.listeners.push(touchEvent);
         }
     }
@@ -374,13 +484,13 @@ var engine;
             child.parent = this;
         }
         removeChild(child) {
-            let i = 0;
-            for (i = 0; i <= this.childArray.length - 1; i++) {
-                if (this.childArray[i] == child) {
-                    break;
-                }
+            let index = this.childArray.indexOf(child);
+            if (index >= 0) {
+                this.childArray.splice(index);
             }
-            this.childArray.splice(i);
+            else {
+                console.log("child is not in the parent");
+            }
         }
         // render(context2D : CanvasRenderingContext2D){
         //     for(let displayObject of this.childArray){
@@ -391,8 +501,8 @@ var engine;
             if (this.touchEnabled) {
                 var rect = new engine.Rectangle();
                 rect.x = rect.y = 0;
-                rect.width = this.getWidth();
-                rect.height = this.getHeight();
+                rect.width = this.width;
+                rect.height = this.height;
                 var result = null;
                 if (rect.isPointInRectangle(x, y)) {
                     result = this;
@@ -481,25 +591,47 @@ var engine;
         constructor(imageID) {
             super("Bitmap");
             this.imageID = "";
-            this.imageID = imageID;
+            this._texture = new Texture();
+            if (imageID) {
+                this.imageID = imageID;
+                engine.RES.getRES(imageID, (textureData) => {
+                    this._texture.data = textureData;
+                    this._texture.width = textureData.width;
+                    this._texture.height = textureData.height;
+                    this.width = textureData.width;
+                    this.height = textureData.height;
+                    this.normalWidth = textureData.width;
+                    this.normalHeight = textureData.height;
+                });
+            }
             // this.texture = new Image();
             // this.texture.src = this.imageID;
             // this.texture.onload = () =>{
             //     this.width = this.texture.width;
             //     this.height = this.texture.height;
             // }
-            engine.RES.getRes(imageID).then((value) => {
-                this.texture = value;
-                this.setWidth(this.texture.width);
-                this.setHeight(this.texture.height);
-                this.normalWidth = this.texture.width;
-                this.normalHeight = this.texture.height;
-                // this.width = this.texture.width;
-                // this.height = this.texture.height;
-                // this.image = this.texture.data;
-                console.log("load complete " + value);
-                // console.log(this.width + " hi! " + this.height);
-            });
+            // RES.getRes(imageID).then((value)=>{
+            //     this.texture = value;
+            //     this.setWidth(this.texture.width);
+            //     this.setHeight(this.texture.height);
+            //     this.normalWidth = this.texture.width;
+            //     this.normalHeight = this.texture.height;
+            //     // this.width = this.texture.width;
+            //     // this.height = this.texture.height;
+            //     // this.image = this.texture.data;
+            //     console.log("load complete "+value);
+            // console.log(this.width + " hi! " + this.height);
+            // })
+        }
+        set texture(data) {
+            this._texture.data = data;
+            this.width = this._texture.data.width;
+            this.height = this._texture.data.height;
+            this.normalWidth = this._texture.data.width;
+            this.normalHeight = this._texture.data.height;
+        }
+        get texture() {
+            return this._texture.data;
         }
         // render(context2D : CanvasRenderingContext2D){
         //     if(this.texture){
@@ -630,8 +762,8 @@ var engine;
 (function (engine) {
     engine.run = (canvas) => {
         var stage = engine.Stage.getInstance();
-        stage.setWidth(canvas.width);
-        stage.setHeight(canvas.height);
+        stage.width = canvas.width;
+        stage.height = canvas.height;
         let context2D = canvas.getContext("2d");
         let renderer = new CanvasRenderer(stage, context2D);
         var currentTarget; //鼠标点击时当前的对象
@@ -639,12 +771,16 @@ var engine;
         var isMouseDown = false;
         var startPoint = new engine.Point(-1, -1);
         var movingPoint = new engine.Point(0, 0);
+        var resoucesJson = engine.RES.getRES("RES.json", (data) => {
+            resoucesJson = data;
+            engine.RES.loadConfig(resoucesJson, () => { });
+        });
         let lastNow = Date.now();
         let frameHandler = () => {
             let now = Date.now();
             let deltaTime = now - lastNow;
             engine.Ticker.getInstance().notify(deltaTime);
-            context2D.clearRect(0, 0, stage.getWidth(), stage.getHeight());
+            context2D.clearRect(0, 0, stage.width, stage.height);
             context2D.save();
             stage.update();
             renderer.render();

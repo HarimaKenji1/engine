@@ -10,12 +10,11 @@ namespace engine {
 
         export class ImageProcessor implements Processor {
 
-        load(url: string, callback: Function) {
-                var result = document.createElement("img");
-                result.src = RESOURCE_PATH + url;
-                result.onload = () => {
-                    callback(result);
-                    return result;
+        load(url: string, callback: (data: any) => void) {
+                var data = document.createElement("img");
+                data.src = RESOURCE_PATH + url;
+                data.onload = () => {
+                    callback(data);
                 }
             // let image = document.createElement("img");
             // image.src = url;
@@ -35,24 +34,24 @@ namespace engine {
     }
 
     export class TextProcessor implements Processor {
-        load(url: string, callback: Function) {
+        load(url: string, callback: (data: any) => void) {
             var xhr = new XMLHttpRequest();
-            xhr.open("get", RESOURCE_PATH + url);
-            xhr.send();
-            xhr.onload = () => {
-            xhr.open('GET', url, true);
+            // xhr.open("get", RESOURCE_PATH + url);
+            // xhr.send();
+            // xhr.onload = () => {
+            xhr.open('GET',RESOURCE_PATH + url, true);
             xhr.send();
             xhr.onreadystatechange = function () {
-                // 通信成功时，状态值为4
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         var obj = eval('(' + xhr.responseText + ')'); 
-                        return xhr.responseText;
+                        callback(obj)
+                        // return obj;
                     } else {
                         console.error(xhr.statusText);
                     }
                 }
-            };
+            // };
             xhr.onerror = function (e) {
                 console.error(xhr.statusText);
             };
@@ -67,42 +66,43 @@ namespace engine {
     var cache = {};
 
     export function getRES(url: string, callback: (data: any) => void) {
-        if(cache[url] == null || 
-        (getTypeByURL(url) == "image" && cache[url].src == null)){
+        // if(cache[url] == null || 
+        // ( getTypeByURL(url) == "image" && 
+        //   cache[url].data == null) ){
             let type = getTypeByURL(url);
             let processor = createProcessor(type);
             if (processor != null) {
                 processor.load(url, (data) => {
                     cache[url] = data;
                     callback(data);
-                    return cache[url];
                 });
             }
-        }
-        return cache[url];
+        //}
+        // else
+        // callback();
     }
 
-    export function loadConfig(preloadJson,callback? : () => void){
-        preloadJson.resources.foreach((config) => {
+    export function loadConfig(preloadJson,callback : () => void){
+        preloadJson.resources.forEach((config) => {
                 if(config.type == "image"){
-                    var preloadResource = new Image();
+                    var preloadResource = new Texture();
+                    getRES(config.url,(data) => {preloadResource.data = data;console.log(data)});
                     preloadResource.width = config.width;
                     preloadResource.height = config.height;
                 }
-
                 cache[config.url] = preloadResource;
             });
-        callback();
+            callback();
     }
 
-    export function get(url: string): any {
+    function get(url: string): any {
         return cache[url];
     }
 
     var getTypeByURL = (url: string): string => {
-        if (url.indexOf(".jpg") >= 0) {
+        if (url.indexOf(".jpg") >= 0 || url.indexOf(".png") >= 0) {
             return "image";
-        }
+        } 
         else if (url.indexOf(".mp3") >= 0) {
             return "sound";
         }

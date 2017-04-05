@@ -32,7 +32,19 @@ declare namespace engine {
 }
 declare namespace engine {
     namespace RES {
-        function getRes(path: string): Promise<{}>;
+        interface Processor {
+            load(url: string, callback: Function): void;
+        }
+        class ImageProcessor implements Processor {
+            load(url: string, callback: (data: any) => void): void;
+        }
+        class TextProcessor implements Processor {
+            load(url: string, callback: (data: any) => void): void;
+        }
+        function mapTypeSelector(typeSelector: (url: string) => string): void;
+        function getRES(url: string, callback: (data: any) => void): void;
+        function loadConfig(preloadJson: any, callback: () => void): void;
+        function map(type: string, processor: Processor): void;
     }
 }
 declare namespace engine {
@@ -67,7 +79,7 @@ declare namespace engine {
         clearList(): void;
         toDo(): void;
     }
-    class TouchEvents {
+    class TouchEventData {
         stageX: number;
         stageY: number;
         type: TouchEventsType;
@@ -101,19 +113,15 @@ declare namespace engine {
         rotation: number;
         localMatrix: Matrix;
         globalMatrix: Matrix;
-        listeners: TouchEvents[];
-        protected width: number;
-        protected height: number;
+        listeners: TouchEventData[];
+        width: number;
+        height: number;
         touchEnabled: boolean;
         normalWidth: number;
         normalHeight: number;
         constructor(type: string);
-        setWidth(width: number): void;
-        setHeight(height: number): void;
-        setScaleX(scalex: any): void;
-        setScaleY(scaley: any): void;
-        getWidth(): number;
-        getHeight(): number;
+        ScaleX: any;
+        ScaleY: any;
         update(): void;
         addEventListener(type: TouchEventsType, touchFunction: Function, object: any, ifCapture?: boolean, priority?: number): void;
         abstract hitTest(x: number, y: number): DisplayObject;
@@ -149,8 +157,9 @@ declare namespace engine {
     }
     class Bitmap extends DisplayObject {
         imageID: string;
-        texture: any;
+        protected _texture: Texture;
         constructor(imageID?: string);
+        texture: HTMLImageElement;
         hitTest(x: number, y: number): this;
         setX(x: any): void;
         setY(y: any): void;

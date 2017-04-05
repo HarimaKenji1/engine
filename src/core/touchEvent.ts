@@ -56,7 +56,8 @@ export class TouchEventService{
     }
 }
 
-export class TouchEvents{
+
+export class TouchEventData{
     stageX: number;
     stageY: number;
     type: TouchEventsType;

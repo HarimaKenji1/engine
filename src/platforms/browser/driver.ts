@@ -11,8 +11,10 @@ namespace engine {
         var isMouseDown = false;
         var startPoint = new Point(-1,-1);
         var movingPoint = new Point(0,0);
-        var resoucesJson = RES.getRES("RES.json", () => {});
-        RES.loadConfig(resoucesJson);
+        var resoucesJson = RES.getRES("RES.json",(data) => {
+            resoucesJson = data;
+            RES.loadConfig(resoucesJson,()=>{});
+        });
 
         let lastNow = Date.now();
         let frameHandler = () => {
