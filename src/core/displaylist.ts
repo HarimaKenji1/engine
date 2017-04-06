@@ -31,8 +31,8 @@ namespace engine {
         localMatrix = new Matrix();
         globalMatrix = new Matrix();
         listeners: TouchEventData[] = [];
-        public width = 1;
-        public height = 1;
+        public width = 0;
+        public height = 0;
         touchEnabled = true;
         public normalWidth = -1;
         public normalHeight = -1;
@@ -110,15 +110,16 @@ namespace engine {
             }
         }
 
-        addChild(child: DisplayObject) {
+        addChild(child　:　DisplayObject) {
             this.childArray.push(child);
             child.parent = this;
         }
 
-        removeChild(child: DisplayObject) {
+        removeChild(child :　DisplayObject) {
+            console.log(child);
             let index = this.childArray.indexOf(child);
             if (index >= 0) {
-                this.childArray.splice(index);
+                this.childArray.splice(index,1);
             }
             else{
                 console.log("child is not in the parent");
@@ -247,21 +248,17 @@ namespace engine {
         protected _texture : Texture;
 
 
-        constructor(imageID?: string) {
+        constructor() {
             super("Bitmap");
             this._texture = new Texture();
-            if (imageID) {
-                this.imageID = imageID;
-                RES.getRES(imageID, (textureData) => {
-                    this._texture.data = textureData;
-                    this._texture.width = textureData.width;
-                    this._texture.height = textureData.height;
-                    this.width = textureData.width;
-                    this.height = textureData.height;
-                    this.normalWidth = textureData.width;
-                    this.normalHeight = textureData.height;
-                });
-            }
+            // if (imageID) {
+            //     this.imageID = imageID;
+            //     this._texture = RES.getRES(imageID, (textureData) => {
+            //         this._texture = textureData;
+            //         this.width = textureData.width;
+            //         this.height = textureData.height;
+            //     });
+            // }
             // this.texture = new Image();
             // this.texture.src = this.imageID;
             // this.texture.onload = () =>{
@@ -282,16 +279,20 @@ namespace engine {
             // })
         }
 
-        set texture(data : HTMLImageElement) {
-            this._texture.data = data;
-            this.width = this._texture.data.width;
-            this.height = this._texture.data.height;
-            this.normalWidth = this._texture.data.width;
-            this.normalHeight = this._texture.data.height;
+        set texture(data : Texture) {
+            this._texture = data;
+            if(this.width <= 0){
+                this.width = data.width;
+            }
+            if(this.height <= 0){
+                this.height = data.height;
+            }
+            this.normalWidth = data.width;
+            this.normalHeight = data.height;
         }
 
         get texture(){
-            return this._texture.data;
+            return this._texture;
         }
 
 
@@ -423,7 +424,7 @@ namespace engine {
         private data: MovieClipData;
 
         constructor(data: MovieClipData) {
-            super(null);
+            super();
             this.setMovieClipData(data);
             this.play();
         }

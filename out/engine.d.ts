@@ -42,7 +42,7 @@ declare namespace engine {
             load(url: string, callback: (data: any) => void): void;
         }
         function mapTypeSelector(typeSelector: (url: string) => string): void;
-        function getRES(url: string, callback: (data: any) => void): void;
+        function getRES(url: string, callback: (data: any) => void): any;
         function loadConfig(preloadJson: any, callback: () => void): void;
         function map(type: string, processor: Processor): void;
     }
@@ -158,8 +158,8 @@ declare namespace engine {
     class Bitmap extends DisplayObject {
         imageID: string;
         protected _texture: Texture;
-        constructor(imageID?: string);
-        texture: HTMLImageElement;
+        constructor();
+        texture: Texture;
         hitTest(x: number, y: number): this;
         setX(x: any): void;
         setY(y: any): void;

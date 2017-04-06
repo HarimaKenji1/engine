@@ -11,11 +11,14 @@ namespace engine {
         var isMouseDown = false;
         var startPoint = new Point(-1,-1);
         var movingPoint = new Point(0,0);
-        var resoucesJson = RES.getRES("RES.json",(data) => {
-            resoucesJson = data;
-            RES.loadConfig(resoucesJson,()=>{});
-        });
-
+        // var xhr = new XMLHttpRequest();
+        // xhr.open("get", "./Resources/RES.json");
+        // xhr.send();
+        // xhr.onload = () => {};
+        // var resoucesJson = RES.getRES("RES.json",(data) => {
+        //     resoucesJson = data;
+        //     RES.loadConfig(resoucesJson,()=>{console.log("Load Complete")});
+        // });
         let lastNow = Date.now();
         let frameHandler = () => {
             let now = Date.now();
@@ -86,8 +89,9 @@ namespace engine {
         }
     }
 
-        return stage;
 
+        return stage;
+        
     }
 
     class CanvasRenderer{
@@ -121,10 +125,8 @@ namespace engine {
         }
 
         renderBitmap(bitmap : Bitmap){
-            if(bitmap.texture){
-                bitmap.normalWidth = bitmap.texture.width;
-                bitmap.normalHeight = bitmap.texture.height;
-                this.context2D.drawImage(bitmap.texture,0,0);
+            if(bitmap.texture.data){
+                this.context2D.drawImage(bitmap.texture.data,0,0);
             }
         }
 

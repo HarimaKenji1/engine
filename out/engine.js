@@ -198,25 +198,48 @@ var engine;
             // ( getTypeByURL(url) == "image" && 
             //   cache[url].data == null) ){
             let type = getTypeByURL(url);
-            let processor = createProcessor(type);
-            if (processor != null) {
-                processor.load(url, (data) => {
-                    cache[url] = data;
-                    callback(data);
-                });
+            if (cache[url] == null) {
+                let processor = createProcessor(type);
+                if (processor != null) {
+                    processor.load(url, (data) => {
+                        if (type == "image") {
+                            var texture = new engine.Texture();
+                            texture.data = data;
+                            texture.width = data.width;
+                            texture.height = data.height;
+                            cache[url] = texture;
+                            callback(texture);
+                        }
+                        else {
+                            cache[url] = data;
+                            callback(data);
+                        }
+                        if (cache[url] == null)
+                            console.log(url + "文件不存在！");
+                        //console.log(type + "还没读取");
+                        return cache[url];
+                    });
+                }
             }
-            //}
-            // else
-            // callback();
+            else {
+                callback(cache[url]);
+                //console.log(type + "读取完了");
+                return cache[url];
+            }
         }
         RES.getRES = getRES;
         function loadConfig(preloadJson, callback) {
             preloadJson.resources.forEach((config) => {
                 if (config.type == "image") {
                     var preloadResource = new engine.Texture();
-                    getRES(config.url, (data) => { preloadResource.data = data; console.log(data); });
                     preloadResource.width = config.width;
                     preloadResource.height = config.height;
+                    let processor = createProcessor("image");
+                    if (processor != null) {
+                        processor.load(config.url, (data) => {
+                            preloadResource.data = data;
+                        });
+                    }
                 }
                 cache[config.url] = preloadResource;
             });
@@ -415,8 +438,8 @@ var engine;
             this.localMatrix = new engine.Matrix();
             this.globalMatrix = new engine.Matrix();
             this.listeners = [];
-            this.width = 1;
-            this.height = 1;
+            this.width = 0;
+            this.height = 0;
             this.touchEnabled = true;
             this.normalWidth = -1;
             this.normalHeight = -1;
@@ -484,9 +507,10 @@ var engine;
             child.parent = this;
         }
         removeChild(child) {
+            console.log(child);
             let index = this.childArray.indexOf(child);
             if (index >= 0) {
-                this.childArray.splice(index);
+                this.childArray.splice(index, 1);
             }
             else {
                 console.log("child is not in the parent");
@@ -588,22 +612,18 @@ var engine;
     }
     engine.TextField = TextField;
     class Bitmap extends DisplayObject {
-        constructor(imageID) {
+        constructor() {
             super("Bitmap");
             this.imageID = "";
             this._texture = new Texture();
-            if (imageID) {
-                this.imageID = imageID;
-                engine.RES.getRES(imageID, (textureData) => {
-                    this._texture.data = textureData;
-                    this._texture.width = textureData.width;
-                    this._texture.height = textureData.height;
-                    this.width = textureData.width;
-                    this.height = textureData.height;
-                    this.normalWidth = textureData.width;
-                    this.normalHeight = textureData.height;
-                });
-            }
+            // if (imageID) {
+            //     this.imageID = imageID;
+            //     this._texture = RES.getRES(imageID, (textureData) => {
+            //         this._texture = textureData;
+            //         this.width = textureData.width;
+            //         this.height = textureData.height;
+            //     });
+            // }
             // this.texture = new Image();
             // this.texture.src = this.imageID;
             // this.texture.onload = () =>{
@@ -624,14 +644,18 @@ var engine;
             // })
         }
         set texture(data) {
-            this._texture.data = data;
-            this.width = this._texture.data.width;
-            this.height = this._texture.data.height;
-            this.normalWidth = this._texture.data.width;
-            this.normalHeight = this._texture.data.height;
+            this._texture = data;
+            if (this.width <= 0) {
+                this.width = data.width;
+            }
+            if (this.height <= 0) {
+                this.height = data.height;
+            }
+            this.normalWidth = data.width;
+            this.normalHeight = data.height;
         }
         get texture() {
-            return this._texture.data;
+            return this._texture;
         }
         // render(context2D : CanvasRenderingContext2D){
         //     if(this.texture){
@@ -722,7 +746,7 @@ var engine;
     engine.Graphics = Graphics;
     class MovieClip extends Bitmap {
         constructor(data) {
-            super(null);
+            super();
             this.advancedTime = 0;
             this.ticker = (deltaTime) => {
                 // this.removeChild();
@@ -771,10 +795,14 @@ var engine;
         var isMouseDown = false;
         var startPoint = new engine.Point(-1, -1);
         var movingPoint = new engine.Point(0, 0);
-        var resoucesJson = engine.RES.getRES("RES.json", (data) => {
-            resoucesJson = data;
-            engine.RES.loadConfig(resoucesJson, () => { });
-        });
+        // var xhr = new XMLHttpRequest();
+        // xhr.open("get", "./Resources/RES.json");
+        // xhr.send();
+        // xhr.onload = () => {};
+        // var resoucesJson = RES.getRES("RES.json",(data) => {
+        //     resoucesJson = data;
+        //     RES.loadConfig(resoucesJson,()=>{console.log("Load Complete")});
+        // });
         let lastNow = Date.now();
         let frameHandler = () => {
             let now = Date.now();
@@ -869,10 +897,8 @@ var engine;
             }
         }
         renderBitmap(bitmap) {
-            if (bitmap.texture) {
-                bitmap.normalWidth = bitmap.texture.width;
-                bitmap.normalHeight = bitmap.texture.height;
-                this.context2D.drawImage(bitmap.texture, 0, 0);
+            if (bitmap.texture.data) {
+                this.context2D.drawImage(bitmap.texture.data, 0, 0);
             }
         }
         renderTextField(textField) {
