@@ -1,13 +1,13 @@
 "use strict";
-var engine;
-(function (engine) {
+var cadence;
+(function (cadence) {
     class Point {
         constructor(x, y) {
             this.x = x;
             this.y = y;
         }
     }
-    engine.Point = Point;
+    cadence.Point = Point;
     class Rectangle {
         constructor() {
             this.x = 0;
@@ -29,13 +29,13 @@ var engine;
             }
         }
     }
-    engine.Rectangle = Rectangle;
+    cadence.Rectangle = Rectangle;
     function pointAppendMatrix(point, m) {
         var x = m.a * point.x + m.c * point.y + m.tx;
         var y = m.b * point.x + m.d * point.y + m.ty;
         return new Point(x, y);
     }
-    engine.pointAppendMatrix = pointAppendMatrix;
+    cadence.pointAppendMatrix = pointAppendMatrix;
     /**
      * 使用伴随矩阵法求逆矩阵
      * http://wenku.baidu.com/view/b0a9fed8ce2f0066f53322a9
@@ -61,7 +61,7 @@ var engine;
         result.ty = -(b * tx + d * ty);
         return result;
     }
-    engine.invertMatrix = invertMatrix;
+    cadence.invertMatrix = invertMatrix;
     function matrixAppendMatrix(m1, m2) {
         var result = new Matrix();
         result.a = m1.a * m2.a + m1.b * m2.c;
@@ -72,7 +72,7 @@ var engine;
         result.ty = m2.b * m1.tx + m2.d * m1.ty + m2.ty;
         return result;
     }
-    engine.matrixAppendMatrix = matrixAppendMatrix;
+    cadence.matrixAppendMatrix = matrixAppendMatrix;
     var PI = Math.PI;
     var HalfPI = PI / 2;
     var PacPI = PI + HalfPI;
@@ -130,11 +130,11 @@ var engine;
             this.d = u * scaleY;
         }
     }
-    engine.Matrix = Matrix;
-})(engine || (engine = {}));
+    cadence.Matrix = Matrix;
+})(cadence || (cadence = {}));
 "use strict";
-var engine;
-(function (engine) {
+var cadence;
+(function (cadence) {
     var RES;
     (function (RES) {
         var RESOURCE_PATH = "./Resources/";
@@ -203,7 +203,7 @@ var engine;
                 if (processor != null) {
                     processor.load(url, (data) => {
                         if (type == "image") {
-                            var texture = new engine.Texture();
+                            var texture = new cadence.Texture();
                             texture.data = data;
                             texture.width = data.width;
                             texture.height = data.height;
@@ -231,7 +231,7 @@ var engine;
         function loadConfig(preloadJson, callback) {
             preloadJson.resources.forEach((config) => {
                 if (config.type == "image") {
-                    var preloadResource = new engine.Texture();
+                    var preloadResource = new cadence.Texture();
                     preloadResource.width = config.width;
                     preloadResource.height = config.height;
                     let processor = createProcessor("image");
@@ -286,11 +286,11 @@ var engine;
         //     //         return(result);
         //     // }
         // }
-    })(RES = engine.RES || (engine.RES = {}));
-})(engine || (engine = {}));
+    })(RES = cadence.RES || (cadence.RES = {}));
+})(cadence || (cadence = {}));
 "use strict";
-var engine;
-(function (engine) {
+var cadence;
+(function (cadence) {
     function setTimeout(func, delayTime) {
         var ticker = Ticker.getInstance();
         var passedTime = 0;
@@ -303,7 +303,7 @@ var engine;
         };
         ticker.register(delayFunc);
     }
-    engine.setTimeout = setTimeout;
+    cadence.setTimeout = setTimeout;
     function setInterval(func, delayTime) {
         var passedTime = 0;
         var ticker = Ticker.getInstance();
@@ -316,11 +316,11 @@ var engine;
         };
         return ticker.register(delayFunc);
     }
-    engine.setInterval = setInterval;
+    cadence.setInterval = setInterval;
     function clearInterval(key) {
         Ticker.getInstance().unregister(key);
     }
-    engine.clearInterval = clearInterval;
+    cadence.clearInterval = clearInterval;
     class Ticker {
         constructor() {
             this.listeners = [];
@@ -350,18 +350,18 @@ var engine;
             }
         }
     }
-    engine.Ticker = Ticker;
-})(engine || (engine = {}));
+    cadence.Ticker = Ticker;
+})(cadence || (cadence = {}));
 "use strict";
-var engine;
-(function (engine) {
+var cadence;
+(function (cadence) {
     var TouchEventsType;
     (function (TouchEventsType) {
         TouchEventsType[TouchEventsType["MOUSEDOWN"] = 0] = "MOUSEDOWN";
         TouchEventsType[TouchEventsType["MOUSEUP"] = 1] = "MOUSEUP";
         TouchEventsType[TouchEventsType["CLICK"] = 2] = "CLICK";
         TouchEventsType[TouchEventsType["MOUSEMOVE"] = 3] = "MOUSEMOVE";
-    })(TouchEventsType = engine.TouchEventsType || (engine.TouchEventsType = {}));
+    })(TouchEventsType = cadence.TouchEventsType || (cadence.TouchEventsType = {}));
     class TouchEventService {
         constructor() {
             this.performerList = [];
@@ -406,7 +406,7 @@ var engine;
     }
     TouchEventService.stageX = -1;
     TouchEventService.stageY = -1;
-    engine.TouchEventService = TouchEventService;
+    cadence.TouchEventService = TouchEventService;
     class TouchEventData {
         constructor(type, func, obj, capture, priority) {
             this.capture = false;
@@ -420,11 +420,11 @@ var engine;
             this.priority = priority || 0;
         }
     }
-    engine.TouchEventData = TouchEventData;
-})(engine || (engine = {}));
+    cadence.TouchEventData = TouchEventData;
+})(cadence || (cadence = {}));
 "use strict";
-var engine;
-(function (engine) {
+var cadence;
+(function (cadence) {
     class DisplayObject {
         constructor(type) {
             this.type = "DisplayObject";
@@ -435,8 +435,8 @@ var engine;
             this.x = 0;
             this.y = 0;
             this.rotation = 0;
-            this.localMatrix = new engine.Matrix();
-            this.globalMatrix = new engine.Matrix();
+            this.localMatrix = new cadence.Matrix();
+            this.globalMatrix = new cadence.Matrix();
             this.listeners = [];
             this.width = 0;
             this.height = 0;
@@ -475,7 +475,7 @@ var engine;
             this.localMatrix.updateFromDisplayObject(this.x, this.y, this.scaleX, this.scaleY, this.rotation);
             if (this.parent) {
                 this.globalAlpha = this.parent.globalAlpha * this.alpha;
-                this.globalMatrix = engine.matrixAppendMatrix(this.localMatrix, this.parent.globalMatrix);
+                this.globalMatrix = cadence.matrixAppendMatrix(this.localMatrix, this.parent.globalMatrix);
             }
             if (this.parent == null) {
                 this.globalAlpha = this.alpha;
@@ -486,11 +486,11 @@ var engine;
             // this.render(context2D);
         }
         addEventListener(type, touchFunction, object, ifCapture, priority) {
-            var touchEvent = new engine.TouchEventData(type, touchFunction, object, ifCapture, priority);
+            var touchEvent = new cadence.TouchEventData(type, touchFunction, object, ifCapture, priority);
             this.listeners.push(touchEvent);
         }
     }
-    engine.DisplayObject = DisplayObject;
+    cadence.DisplayObject = DisplayObject;
     class DisplayObjectContainer extends DisplayObject {
         constructor() {
             super("DisplayObjectContainer");
@@ -523,19 +523,19 @@ var engine;
         // }
         hitTest(x, y) {
             if (this.touchEnabled) {
-                var rect = new engine.Rectangle();
+                var rect = new cadence.Rectangle();
                 rect.x = rect.y = 0;
                 rect.width = this.width;
                 rect.height = this.height;
                 var result = null;
                 if (rect.isPointInRectangle(x, y)) {
                     result = this;
-                    engine.TouchEventService.getInstance().addPerformer(this); //从父到子把相关对象存入数组
+                    cadence.TouchEventService.getInstance().addPerformer(this); //从父到子把相关对象存入数组
                     for (let i = this.childArray.length - 1; i >= 0; i--) {
                         var child = this.childArray[i];
-                        var point = new engine.Point(x, y);
-                        var invertChildenLocalMatirx = engine.invertMatrix(child.localMatrix);
-                        var pointBasedOnChild = engine.pointAppendMatrix(point, invertChildenLocalMatirx);
+                        var point = new cadence.Point(x, y);
+                        var invertChildenLocalMatirx = cadence.invertMatrix(child.localMatrix);
+                        var pointBasedOnChild = cadence.pointAppendMatrix(point, invertChildenLocalMatirx);
                         var hitTestResult = child.hitTest(pointBasedOnChild.x, pointBasedOnChild.y);
                         if (hitTestResult) {
                             result = hitTestResult;
@@ -548,8 +548,8 @@ var engine;
             }
         }
     }
-    engine.DisplayObjectContainer = DisplayObjectContainer;
-    class Stage extends engine.DisplayObjectContainer {
+    cadence.DisplayObjectContainer = DisplayObjectContainer;
+    class Stage extends cadence.DisplayObjectContainer {
         static getInstance() {
             if (this.instance == null) {
                 Stage.instance = new Stage();
@@ -559,7 +559,7 @@ var engine;
     }
     Stage.stageX = 0;
     Stage.stageY = 0;
-    engine.Stage = Stage;
+    cadence.Stage = Stage;
     class TextField extends DisplayObject {
         constructor() {
             super("TextField");
@@ -576,12 +576,12 @@ var engine;
         // }
         hitTest(x, y) {
             if (this.touchEnabled) {
-                var rect = new engine.Rectangle();
+                var rect = new cadence.Rectangle();
                 rect.x = rect.y = 0;
                 rect.width = this.size * this.text.length;
                 rect.height = this.size;
                 if (rect.isPointInRectangle(x, y)) {
-                    engine.TouchEventService.getInstance().addPerformer(this);
+                    cadence.TouchEventService.getInstance().addPerformer(this);
                     return this;
                 }
                 else {
@@ -610,7 +610,7 @@ var engine;
             this.textType = this.size.toString() + "px " + this.typeFace;
         }
     }
-    engine.TextField = TextField;
+    cadence.TextField = TextField;
     class Bitmap extends DisplayObject {
         constructor() {
             super("Bitmap");
@@ -671,12 +671,12 @@ var engine;
         // }
         hitTest(x, y) {
             if (this.touchEnabled) {
-                var rect = new engine.Rectangle();
+                var rect = new cadence.Rectangle();
                 rect.x = rect.y = 0;
                 rect.width = this.width;
                 rect.height = this.height;
                 if (rect.isPointInRectangle(x, y)) {
-                    engine.TouchEventService.getInstance().addPerformer(this);
+                    cadence.TouchEventService.getInstance().addPerformer(this);
                     return this;
                 }
                 else {
@@ -694,14 +694,14 @@ var engine;
             this.y = y;
         }
     }
-    engine.Bitmap = Bitmap;
+    cadence.Bitmap = Bitmap;
     class Shape extends DisplayObjectContainer {
         constructor() {
             super();
             this.graphics = new Graphics();
         }
     }
-    engine.Shape = Shape;
+    cadence.Shape = Shape;
     class Graphics extends DisplayObjectContainer {
         constructor() {
             super();
@@ -743,7 +743,7 @@ var engine;
             context2D.stroke();
         }
     }
-    engine.Graphics = Graphics;
+    cadence.Graphics = Graphics;
     class MovieClip extends Bitmap {
         constructor(data) {
             super();
@@ -763,10 +763,10 @@ var engine;
             this.play();
         }
         play() {
-            engine.Ticker.getInstance().register(this.ticker);
+            cadence.Ticker.getInstance().register(this.ticker);
         }
         stop() {
-            engine.Ticker.getInstance().unregister(this.ticker);
+            cadence.Ticker.getInstance().unregister(this.ticker);
         }
         setMovieClipData(data) {
             this.data = data;
@@ -776,16 +776,31 @@ var engine;
     }
     MovieClip.FRAME_TIME = 20;
     MovieClip.TOTAL_FRAME = 10;
-    engine.MovieClip = MovieClip;
+    cadence.MovieClip = MovieClip;
     class Texture {
     }
-    engine.Texture = Texture;
-})(engine || (engine = {}));
+    cadence.Texture = Texture;
+})(cadence || (cadence = {}));
 "use strict";
-var engine;
-(function (engine) {
-    engine.run = (canvas) => {
-        var stage = engine.Stage.getInstance();
+var cadence;
+(function (cadence) {
+    var main;
+    function setMain(main) {
+        this.main = main;
+        var resoucesJson = cadence.RES.getRES("RES.json", (data) => {
+            resoucesJson = data;
+            cadence.RES.loadConfig(resoucesJson, () => {
+                console.log("Load Complete");
+                if (main != null)
+                    main.createGameScene();
+                else
+                    console.log("main is not exsist");
+            });
+        });
+    }
+    cadence.setMain = setMain;
+    cadence.run = (canvas) => {
+        var stage = cadence.Stage.getInstance();
         stage.width = canvas.width;
         stage.height = canvas.height;
         let context2D = canvas.getContext("2d");
@@ -793,21 +808,23 @@ var engine;
         var currentTarget; //鼠标点击时当前的对象
         var startTarget; //mouseDown时的对象
         var isMouseDown = false;
-        var startPoint = new engine.Point(-1, -1);
-        var movingPoint = new engine.Point(0, 0);
-        // var xhr = new XMLHttpRequest();
-        // xhr.open("get", "./Resources/RES.json");
-        // xhr.send();
-        // xhr.onload = () => {};
+        var startPoint = new cadence.Point(-1, -1);
+        var movingPoint = new cadence.Point(0, 0);
         // var resoucesJson = RES.getRES("RES.json",(data) => {
         //     resoucesJson = data;
-        //     RES.loadConfig(resoucesJson,()=>{console.log("Load Complete")});
+        //     RES.loadConfig(resoucesJson,()=>{
+        //         console.log("Load Complete");
+        //         if(main != null)
+        //         main.createGameScene();
+        //         else
+        //         console.log("main is not exsist");
+        //     });
         // });
         let lastNow = Date.now();
         let frameHandler = () => {
             let now = Date.now();
             let deltaTime = now - lastNow;
-            engine.Ticker.getInstance().notify(deltaTime);
+            cadence.Ticker.getInstance().notify(deltaTime);
             context2D.clearRect(0, 0, stage.width, stage.height);
             context2D.save();
             stage.update();
@@ -820,35 +837,35 @@ var engine;
         window.onmousedown = (e) => {
             let x = e.offsetX - 3;
             let y = e.offsetY - 3;
-            engine.TouchEventService.stageX = x;
-            engine.TouchEventService.stageY = y;
-            engine.Stage.stageX = engine.TouchEventService.stageX;
-            engine.Stage.stageY = engine.TouchEventService.stageY;
+            cadence.TouchEventService.stageX = x;
+            cadence.TouchEventService.stageY = y;
+            cadence.Stage.stageX = cadence.TouchEventService.stageX;
+            cadence.Stage.stageY = cadence.TouchEventService.stageY;
             startPoint.x = x;
             startPoint.y = y;
             movingPoint.x = x;
             movingPoint.y = y;
-            engine.TouchEventService.currentType = engine.TouchEventsType.MOUSEDOWN;
+            cadence.TouchEventService.currentType = cadence.TouchEventsType.MOUSEDOWN;
             currentTarget = stage.hitTest(x, y);
             startTarget = currentTarget;
-            engine.TouchEventService.getInstance().toDo();
+            cadence.TouchEventService.getInstance().toDo();
             isMouseDown = true;
         };
         window.onmouseup = (e) => {
             let x = e.offsetX - 3;
             let y = e.offsetY - 3;
-            engine.TouchEventService.stageX = x;
-            engine.TouchEventService.stageY = y;
-            engine.Stage.stageX = engine.TouchEventService.stageX;
-            engine.Stage.stageY = engine.TouchEventService.stageY;
+            cadence.TouchEventService.stageX = x;
+            cadence.TouchEventService.stageY = y;
+            cadence.Stage.stageX = cadence.TouchEventService.stageX;
+            cadence.Stage.stageY = cadence.TouchEventService.stageY;
             var target = stage.hitTest(x, y);
             if (target == currentTarget) {
-                engine.TouchEventService.currentType = engine.TouchEventsType.CLICK;
+                cadence.TouchEventService.currentType = cadence.TouchEventsType.CLICK;
             }
             else {
-                engine.TouchEventService.currentType = engine.TouchEventsType.MOUSEUP;
+                cadence.TouchEventService.currentType = cadence.TouchEventsType.MOUSEUP;
             }
-            engine.TouchEventService.getInstance().toDo();
+            cadence.TouchEventService.getInstance().toDo();
             currentTarget = null;
             isMouseDown = false;
         };
@@ -856,13 +873,13 @@ var engine;
             if (isMouseDown) {
                 let x = e.offsetX - 3;
                 let y = e.offsetY - 3;
-                engine.TouchEventService.stageX = x;
-                engine.TouchEventService.stageY = y;
-                engine.Stage.stageX = engine.TouchEventService.stageX;
-                engine.Stage.stageY = engine.TouchEventService.stageY;
-                engine.TouchEventService.currentType = engine.TouchEventsType.MOUSEMOVE;
+                cadence.TouchEventService.stageX = x;
+                cadence.TouchEventService.stageY = y;
+                cadence.Stage.stageX = cadence.TouchEventService.stageX;
+                cadence.Stage.stageY = cadence.TouchEventService.stageY;
+                cadence.TouchEventService.currentType = cadence.TouchEventsType.MOUSEMOVE;
                 currentTarget = stage.hitTest(x, y);
-                engine.TouchEventService.getInstance().toDo();
+                cadence.TouchEventService.getInstance().toDo();
                 movingPoint.x = x;
                 movingPoint.y = y;
             }
@@ -907,4 +924,4 @@ var engine;
             this.context2D.fillText(textField.text, 0, 0 + textField.size);
         }
     }
-})(engine || (engine = {}));
+})(cadence || (cadence = {}));

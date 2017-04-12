@@ -1,7 +1,24 @@
-namespace engine {
+namespace cadence {
+
+    var main;
+
+    export function setMain(main){
+        this.main = main;
+        var resoucesJson = RES.getRES("RES.json",(data) => {
+            resoucesJson = data;
+            RES.loadConfig(resoucesJson,()=>{
+                console.log("Load Complete");
+                if(main != null)
+                main.createGameScene();
+                else
+                console.log("main is not exsist");
+            });
+        });
+    }
+
     export let run = (canvas: HTMLCanvasElement) => {
 
-        var stage = engine.Stage.getInstance();
+        var stage = cadence.Stage.getInstance();
         stage.width = canvas.width;
         stage.height = canvas.height;
         let context2D = canvas.getContext("2d");
@@ -11,14 +28,18 @@ namespace engine {
         var isMouseDown = false;
         var startPoint = new Point(-1,-1);
         var movingPoint = new Point(0,0);
-        // var xhr = new XMLHttpRequest();
-        // xhr.open("get", "./Resources/RES.json");
-        // xhr.send();
-        // xhr.onload = () => {};
+
         // var resoucesJson = RES.getRES("RES.json",(data) => {
         //     resoucesJson = data;
-        //     RES.loadConfig(resoucesJson,()=>{console.log("Load Complete")});
+        //     RES.loadConfig(resoucesJson,()=>{
+        //         console.log("Load Complete");
+        //         if(main != null)
+        //         main.createGameScene();
+        //         else
+        //         console.log("main is not exsist");
+        //     });
         // });
+
         let lastNow = Date.now();
         let frameHandler = () => {
             let now = Date.now();

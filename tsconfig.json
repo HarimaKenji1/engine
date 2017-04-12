@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "es6",
-		"out": "./out/engine.js",
+		"out": "./out/cadence.js",
 		"declaration": true,
 		"alwaysStrict": true,
 		"experimentalDecorators":true

@@ -1,4 +1,4 @@
-namespace engine {
+namespace cadence {
     export namespace RES {
         var RESOURCE_PATH = "./Resources/";
 

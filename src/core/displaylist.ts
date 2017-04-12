@@ -1,4 +1,4 @@
-namespace engine {
+namespace cadence {
 
 
     export type MovieClipData = {
@@ -165,7 +165,7 @@ namespace engine {
         }
     }
 
-    export class Stage extends engine.DisplayObjectContainer {
+    export class Stage extends cadence.DisplayObjectContainer {
         static stageX = 0;
         static stageY = 0;
         static instance: Stage;

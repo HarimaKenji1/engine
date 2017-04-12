@@ -1,4 +1,4 @@
-declare namespace engine {
+declare namespace cadence {
     class Point {
         x: number;
         y: number;
@@ -30,7 +30,7 @@ declare namespace engine {
         updateFromDisplayObject(x: number, y: number, scaleX: number, scaleY: number, rotation: number): void;
     }
 }
-declare namespace engine {
+declare namespace cadence {
     namespace RES {
         interface Processor {
             load(url: string, callback: Function): void;
@@ -47,7 +47,7 @@ declare namespace engine {
         function map(type: string, processor: Processor): void;
     }
 }
-declare namespace engine {
+declare namespace cadence {
     type Ticker_Listener_Type = (deltaTime: number) => void;
     function setTimeout(func: Function, delayTime: number): void;
     function setInterval(func: Function, delayTime: number): number;
@@ -61,7 +61,7 @@ declare namespace engine {
         notify(deltaTime: number): void;
     }
 }
-declare namespace engine {
+declare namespace cadence {
     enum TouchEventsType {
         MOUSEDOWN = 0,
         MOUSEUP = 1,
@@ -90,7 +90,7 @@ declare namespace engine {
         constructor(type: TouchEventsType, func: Function, obj: any, capture?: boolean, priority?: number);
     }
 }
-declare namespace engine {
+declare namespace cadence {
     type MovieClipData = {
         name: string;
         frames: MovieClipFrameData[];
@@ -134,7 +134,7 @@ declare namespace engine {
         removeChild(child: DisplayObject): void;
         hitTest(x: number, y: number): DisplayObject;
     }
-    class Stage extends engine.DisplayObjectContainer {
+    class Stage extends cadence.DisplayObjectContainer {
         static stageX: number;
         static stageY: number;
         static instance: Stage;
@@ -200,6 +200,7 @@ declare namespace engine {
         height: number;
     }
 }
-declare namespace engine {
+declare namespace cadence {
+    function setMain(main: any): void;
     let run: (canvas: HTMLCanvasElement) => Stage;
 }
